@@ -48,7 +48,7 @@ async function gerarEspecial(){const e=normEmail($('#ce-email').value),n=limpaTx
  if(!validEmail(e)){toast('E-mail inválido');return}if(!/^\d{4}-\d{2}-\d{2}$/.test(dt)||diasPara(dt)<0){toast('Escolha uma data futura');return}
  let code;try{code=await makeLicense(e,'parcelado',0,dt)}catch(x){toast(x.message);go('chave');return}
  ACC.cfg.sales=ACC.cfg.sales||[];ACC.cfg.sales.push({email:e,plan:'parcelado',code,ate:dt,date:new Date().toLocaleDateString('pt-BR')});saveAcc();
- const pn=primeiroNome(n)||'',link=linkAtiv(code),pix=PIX_ESPECIAL+'?n='+encodeURIComponent(pn);
+ const pn=primeiroNome(n)||'',link=linkAtiv(code),pix=PIX_ESPECIAL+'?n='+encodeURIComponent(pn)+'&d2='+dt;
  const msg=`Olá, ${pn}! 🎷 Obrigado por fazer parte do MUSICALIS.\n\nSeu acesso especial está liberado até ${brData(dt)}, data da próxima parcela (${v}).\n\n1) Toque no link abaixo\n2) Entre com o e-mail ${e}\n3) Pronto: o plano é ativado sozinho\n\n${link}\n\nPara pagar a próxima parcela no Pix:\n${pix}\n\nImportante: se a parcela não for paga até ${brData(dt)}, as funções pagas do app ficam bloqueadas até o pagamento. Quitando tudo, seu plano vira Vitalício.\n\nKenny Anderson • MUSICALIS\nWhatsApp (51) 98416-8848`;
  $('#ce-out').innerHTML=caixaCodigo(code,`${e} • Vitalício parcelado até ${brData(dt)}`,msg)}
 {const a=painel;painel=function(){a();const c=document.querySelector('#sl-out');const card=c&&c.closest('.card');if(card&&!document.getElementById('card-especial'))card.insertAdjacentHTML('afterend',cardEspecial())}}
