@@ -4,7 +4,7 @@ Uso:
      --parcela 500,2026-11-24 --parcela 500,2026-12-20 [--obs "texto extra"]
 Cria ../especial/<nome>-<código>/index.html com QR Code e Pix Copia e Cola de cada parcela.
 Não grava e-mail nem telefone (a página é pública; os dados ficam só na planilha)."""
-import argparse,base64,io,os,re,secrets,unicodedata,datetime,html
+import json,argparse,base64,io,os,re,secrets,unicodedata,datetime,html
 import qrcode
 CHAVE='+5551984168848';RECEB='ANDERSON ALVES';CIDADE='SAPUCAIA DO SUL'
 def f(i,v):return f'{i}{len(v):02d}{v}'
@@ -36,10 +36,11 @@ def main():
     slug=o.slug or re.sub(r'[^a-z0-9]+','-',semacento(nome.split()[0].lower()))+'-'+secrets.token_hex(3)
     ini=''.join(w[0] for w in semacento(nome).upper().split()[:2])
     pl=semacento(plano).upper()[:3]
+    cod={'vitalicio':'vitalicio','anual':'anual','semestral':'semestral','trimestral':'trimestral','mensal':'mensal'}.get(semacento(plano).lower(),'vitalicio')
     secs=[]
     for i,(v,d) in enumerate(parc,1):
         txid=f'MUS{pl}{ini}{i}'[:25];code=pix(v,f'MUSICALIS {semacento(plano)} {i}/{n}',txid)
-        lemb=d-datetime.timedelta(days=2)
+        lemb=d-datetime.timedelta(days=2);prox=parc[i][1].isoformat() if i<n else ''
         if i==1:obs='Assim que o pagamento for confirmado, eu libero o seu acesso no app.'
         elif i<n:obs=f'No dia <b>{lemb:%d/%m}</b>, dois dias antes do vencimento, eu te mando um lembrete.'
         else:obs=f'No dia <b>{lemb:%d/%m}</b>, dois dias antes do vencimento, eu te mando um lembrete. Com esta parcela paga, o seu plano <b>{html.escape(plano)}</b> fica completo.'
@@ -51,7 +52,7 @@ def main():
  <p class="dica">No app do seu banco: <b>Pix → Pagar com QR Code</b> ou <b>Pix Copia e Cola</b>:</p>
  <textarea readonly id="c{i}" rows="3">{code}</textarea>
  <button class="btn ouro" onclick="copiar({i},this)">Copiar código Pix da {i}ª parcela</button>
- <a class="btn wa" target="_blank" rel="noopener" data-p="{i}" data-v="{brl(v)}" href="#">Já paguei: enviar comprovante</a>
+ <button class="btn wa" onclick='musComprovante({{k:"parcela",p:"{cod}",prod:"MUSICALIS {html.escape(plano)}",v:"{brl(v)}",i:{i},tot:{n},prox:"{prox}",nome:{json.dumps(nome).replace(chr(39),"&#39;")}}})'>Já paguei: enviar comprovante</button>
 </section>''')
     iguais=len({v for v,_ in parc})==1
     resumo=f'{n} parcelas de {brl(parc[0][0])}' if iguais and n>1 else (f'{n} parcelas, total de {brl(total)}' if n>1 else f'pagamento único de {brl(total)}')
@@ -76,9 +77,9 @@ def main():
 <a class="btn wa" target="_blank" rel="noopener" id="duvida" href="#">Tirar uma dúvida no WhatsApp</a>
 <footer>Kenny Anderson • MUSICALIS<br>WhatsApp (51) 98416-8848</footer>
 </main>
+<script src="../../confirma.js"></script>
 <script>
 const nome={nome!r};const wa=t=>'https://wa.me/5551984168848?text='+encodeURIComponent(t);
-document.querySelectorAll('a.wa[data-p]').forEach(a=>{{a.href=wa('Olá, Kenny! Aqui é '+nome+'. Paguei a '+a.dataset.p+'ª parcela do MUSICALIS {html.escape(plano)} ('+a.dataset.v+'). Segue o comprovante:')}});
 document.getElementById('duvida').href=wa('Olá, Kenny! Aqui é '+nome+'. Tenho uma dúvida sobre o MUSICALIS {html.escape(plano)}.');
 function copiar(n,b){{const t=document.getElementById('c'+n),ok=()=>{{const o=b.textContent;b.textContent='Código copiado ✓';setTimeout(()=>b.textContent=o,2500)}};
  if(navigator.clipboard)navigator.clipboard.writeText(t.value).then(ok).catch(()=>{{t.select();document.execCommand('copy');ok()}});else{{t.select();document.execCommand('copy');ok()}}}}

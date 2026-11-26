@@ -36,7 +36,7 @@ footer{color:var(--sub);font-size:14px;text-align:center;margin-top:22px}
  <p class="dica">No app do seu banco: <b>Pix → Pagar com QR Code</b> ou <b>Pix Copia e Cola</b>:</p>
  <textarea readonly id="c1" rows="3">00020126630014br.gov.bcb.pix0114+55519841688480223MUSICALIS Vitalicio 1/25204000053039865406500.005802BR5914ANDERSON ALVES6015SAPUCAIA DO SUL62120508MUSVITL163042B3D</textarea>
  <button class="btn ouro" onclick="copiar(1,this)">Copiar código Pix da 1ª parcela</button>
- <a class="btn wa" target="_blank" rel="noopener" data-p="1" data-v="R$ 500,00" href="#">Já paguei: enviar comprovante</a>
+ <button class="btn wa" onclick='musComprovante({k:"parcela",p:"vitalicio",prod:"MUSICALIS Vitalício",v:"R$ 500,00",i:1,tot:2,prox:"2026-12-20",nome:"Luiz"})'>Já paguei: enviar comprovante</button>
 </section><section class="parc">
  <div class="tag">2ª parcela</div><div class="valor">R$ 500,00</div>
  <div class="venc">Pagar até <b>20/12/2026</b> • domingo</div>
@@ -45,7 +45,7 @@ footer{color:var(--sub);font-size:14px;text-align:center;margin-top:22px}
  <p class="dica">No app do seu banco: <b>Pix → Pagar com QR Code</b> ou <b>Pix Copia e Cola</b>:</p>
  <textarea readonly id="c2" rows="3">00020126630014br.gov.bcb.pix0114+55519841688480223MUSICALIS Vitalicio 2/25204000053039865406500.005802BR5914ANDERSON ALVES6015SAPUCAIA DO SUL62120508MUSVITL26304B921</textarea>
  <button class="btn ouro" onclick="copiar(2,this)">Copiar código Pix da 2ª parcela</button>
- <a class="btn wa" target="_blank" rel="noopener" data-p="2" data-v="R$ 500,00" href="#">Já paguei: enviar comprovante</a>
+ <button class="btn wa" onclick='musComprovante({k:"parcela",p:"vitalicio",prod:"MUSICALIS Vitalício",v:"R$ 500,00",i:2,tot:2,prox:"",nome:"Luiz"})'>Já paguei: enviar comprovante</button>
 </section>
 
 <p class="aviso">⚠️ <b>Importante:</b> esta condição é especial e vale só com as parcelas em dia. Se uma parcela não for paga até a data, as funções pagas do app ficam pausadas até o pagamento.<br><br>Ao pagar, confira o destinatário: <b>Anderson Alves</b> • chave Pix <b>(51) 98416-8848</b>.</p>
@@ -54,9 +54,9 @@ footer{color:var(--sub);font-size:14px;text-align:center;margin-top:22px}
 <a class="btn wa" target="_blank" rel="noopener" id="duvida" href="#">Tirar uma dúvida no WhatsApp</a>
 <footer>Kenny Anderson • MUSICALIS<br>WhatsApp (51) 98416-8848</footer>
 </main>
+<script src="../../confirma.js"></script>
 <script>
 const nome='Luiz';const wa=t=>'https://wa.me/5551984168848?text='+encodeURIComponent(t);
-document.querySelectorAll('a.wa[data-p]').forEach(a=>{a.href=wa('Olá, Kenny! Aqui é '+nome+'. Paguei a '+a.dataset.p+'ª parcela do MUSICALIS Vitalício ('+a.dataset.v+'). Segue o comprovante:')});
 document.getElementById('duvida').href=wa('Olá, Kenny! Aqui é '+nome+'. Tenho uma dúvida sobre o MUSICALIS Vitalício.');
 function copiar(n,b){const t=document.getElementById('c'+n),ok=()=>{const o=b.textContent;b.textContent='Código copiado ✓';setTimeout(()=>b.textContent=o,2500)};
  if(navigator.clipboard)navigator.clipboard.writeText(t.value).then(ok).catch(()=>{t.select();document.execCommand('copy');ok()});else{t.select();document.execCommand('copy');ok()}}
